@@ -23,7 +23,7 @@ async function clickResetButton(page) {
  * Scrapes the measurement results from the webpage
  * @param {Object} page - loaded browser page.
  * @param {Number} measurementCount - keeps track of how many weighings in current session.
- * @returns {Array} - processed result of string on web page as [[left], "equality", [right]]
+ * @returns {Array} - Equality from the result of string on web page 
  */
 async function getMeasurementResults(page, measurementCount) {
     let retries = 0;
@@ -50,9 +50,7 @@ async function getMeasurementResults(page, measurementCount) {
 
         let measurement = weighings[measurementCount-1];
         let parts = measurement.split(" ");
-        let left = parts[0].split(",").map( n => {return parseInt(n.replace(/[^0-9]/g, ''))});
-        let right = parts[2].split(",").map( n => {return parseInt(n.replace(/[^0-9]/g, ''))});
-        return [left, parts[1], right];
+        return parts[1];
     }
 }
 
@@ -118,10 +116,8 @@ async function minimumWeighingsAlgorithm(page, measurementCount){
         }
         
         await clickWeighButton(page);
-        let weighings = await getMeasurementResults(page, ++measurementCount);
-        let result = weighings[1];
-
-        console.log(`Weigh #${measurementCount}: ${weighings}`);
+        let result = await getMeasurementResults(page, ++measurementCount);
+        console.log(`Weigh #${measurementCount}: ${result}`);
 
         if(result === ">"){
             if(bars.length <= 2) return bars[bars.length-1];
@@ -153,7 +149,7 @@ async function minimumWeighingsAlgorithm(page, measurementCount){
     await page.waitForSelector('.game-board');
     console.log("Browser initialized");
 
-    //run algorithm and check results
+    // Run algorithm and check results
     console.log("Running minimum weighs algorithm...")
     let answer = await minimumWeighingsAlgorithm(page, measurementCount);
     console.log(`Alogorithm result: ${answer}`);
@@ -168,7 +164,7 @@ async function minimumWeighingsAlgorithm(page, measurementCount){
         path: `./results/result-${Math.floor(Math.random()*10000)}.png`,
     });
     if(result === successPrompt)
-        console.log("ALGORITHM TEST PASSED")
+        console.log("Algorithm test passed")
     console.log(`RESULT: ${result}`);
 
     await browser.close();
