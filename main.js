@@ -100,9 +100,9 @@ function delay(time) {
  * @param {Number} measurementCount - keeps track of how many weighings in current session.
  * @returns {Number} - the number of the fake bar
  */ 
-async function minimumWeighingsAlgorithm(page, measurementCount){
-    bars = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-   
+async function minimumWeighingsAlgorithm(page, measurementCount, bars){
+    console.log(bars);
+
     while(bars.length > 1){
         let mid = Math.floor(bars.length/2);
         let isOdd = bars.length % 2 != 0;
@@ -151,7 +151,12 @@ async function minimumWeighingsAlgorithm(page, measurementCount){
 
     // Run algorithm and check results
     console.log("Running minimum weighs algorithm...")
-    let answer = await minimumWeighingsAlgorithm(page, measurementCount);
+
+    let bars = await page.$$eval("div.coins button", list => {
+        return list.map(item => parseInt(item.textContent));
+    });
+
+    let answer = await minimumWeighingsAlgorithm(page, measurementCount, bars);
     console.log(`Alogorithm result: ${answer}`);
 
     page.on('dialog', async dialog => {
